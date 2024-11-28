@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>酒店管理系统</title>
+    <link rel="stylesheet" href="../css/admin_styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="../assest/logo.png" alt="Hotel Logo" />
+        </div>
+        <div class="user-profile">
+            <img src="../assest/admin.png" alt="Admin Avatar" class="avatar" />
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- 左侧导航栏 -->
+        <nav class="sidebar">
+            <button class="nav-button active" onclick="switchPage('room-management')">
+                房间管理
+            </button>
+            <button class="nav-button" onclick="switchPage('bill-management')">
+                账单管理
+            </button>
+        </nav>
+
+        <!-- 右侧内容区域 -->
+        <main class="content">
+            <!-- 房间管理页面 -->
+            <div id="room-management" class="page active">
+                <h1>房间管理</h1>
+                <div class="room-grid">
+                    <!-- 删除静态示例房间卡片，所有房间卡片将通过 JavaScript 动态生成 -->
+                </div>
+            </div>
+
+            <!-- 账单管理页面 -->
+            <div id="bill-management" class="page">
+                <h1>账单管理</h1>
+                <div class="bill-container">
+                    <div class="bill-filters">
+                        <input type="date" class="date-filter">
+                        <select class="room-filter">
+                            <option value="">选择房间</option>
+                            <option value="101">101房</option>
+                            <option value="102">102房</option>
+                        </select>
+                        <button class="search-btn">搜索</button>
+                    </div>
+                    <div class="bill-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>房间号</th>
+                                    <th>日期</th>
+                                    <th>使用时长</th>
+                                    <th>费用</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 账单数据将通过JavaScript动态添加 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 空调详单页面 -->
+            <div id="ac-details" class="page">
+                <div class="page-header">
+                    <button class="back-btn" onclick="switchPage('room-management')">返回</button>
+                    <h1>空调详单</h1>
+                </div>
+                <div class="details-container">
+                    <div class="details-header">
+                        <h2>房间号：<span id="detail-room-number">101</span></h2>
+                    </div>
+                    <div class="details-content">
+                        <div class="detail-item">
+                            <label>费用：</label>
+                            <span id="current-cost">¥25.5</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>费率：</label>
+                            <span id="current-rate">¥0.5/时</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>风速：</label>
+                            <span id="current-speed">中速</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>开始时间：</label>
+                            <span id="start-time">2024-03-20 14:30</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>结束时间：</label>
+                            <span id="end-time">2024-03-20 16:30</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 空调控制面板页面 -->
+            <div id="ac-control" class="page">
+                <div class="page-header">
+                    <button class="back-btn" onclick="switchPage('room-management')">返回</button>
+                    <h1>空调控制面板</h1>
+                    <h2>房间号：<span id="control-room-number">101</span></h2>
+                </div>
+                <div class="control-panel">
+                    <div class="panel">
+                        <h2>空调控制</h2>
+                        <div class="controls">
+                            <button onclick="increaseTemp()">升温</button>
+                            <button onclick="decreaseTemp()">降温</button>
+                            <button onclick="togglePower()">开关机</button>
+                            <button onclick="changeFanSpeed()">调风速</button>
+                        </div>
+                        <label for="ac-temp">空调温度:</label>
+                        <input type="range" id="ac-temp" min="18" max="30" value="25" oninput="updateDisplayTemp()">
+                        <span id="display-temp">25°</span>
+                        <div id="fan-speed-icon"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <a href="https://github.com/prepikes/software" target="_blank">
+            Copyright @ 2024-BUPT SE
+        </a>
+    </footer>
+
+    <script src="../js/admin_scripts.js"></script>
+</body>
+</html>

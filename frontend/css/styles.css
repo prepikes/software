@@ -1,0 +1,119 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+}
+
+header {
+  display: flex;            /* Use flexbox to align items */
+  justify-content: space-between; /* Place logo on the left, nav on the right */
+  align-items: center;      /* Vertically align items */
+  padding: 10px 20px;
+  background-color: #333;
+}
+
+.logo {
+  font-size: 1.5rem;
+}
+
+.logo img {
+  height: 50px; /* Adjust the height of the logo */
+  width: auto;  /* Maintain the aspect ratio */
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #fff;
+}
+
+.avatar:hover {
+  opacity: 0.8;
+}
+
+.container {
+  display: flex;
+  justify-content: space-around;
+  padding: 2rem;
+}
+
+.left-column,
+.right-column {
+  width: 45%;
+}
+
+.panel {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.panel h2 {
+  margin-bottom: 1rem;
+  color: #4CAF50;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.controls button {
+  flex: 1;
+  padding: 0.5rem;
+  margin: 0 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#air-conditioner-control input[type="range"] {
+  width: 100%;
+}
+
+#display-temp {
+  font-size: 2rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+#fan-speed-icon {
+  font-size: 2rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 10px 0;
+    background-color: #333;
+    text-align: center;
+}
+
+footer a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
