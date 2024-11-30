@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hotel Room Control</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
@@ -27,13 +28,17 @@
                 <section id="air-conditioner-control" class="panel">
                     <h2>空调面板</h2>
                     <div class="controls">
-                        <button onclick="increaseTemp()">升温</button>
-                        <button onclick="decreaseTemp()">降温</button>
-                        <button onclick="togglePower()">开关机</button>
+                        <button onclick="togglePower()">
+                            <span class="power-status"></span>
+                            开关机
+                        </button>
                         <button onclick="changeFanSpeed()">调风速</button>
                     </div>
-                    <label for="ac-temp">空调温度:</label>
-                    <input type="range" id="ac-temp" min="18" max="30" value="25" oninput="updateDisplayTemp()">
+                    <div class="temp-control">
+                        <label for="target-temp">目标温度: </label>
+                        <input type="number" id="target-temp" min="18" max="30" value="25">
+                        <button onclick="setTargetTemp()">确定</button>
+                    </div>
                     <span id="display-temp">25°</span>
                     <div id="fan-speed-icon"></div>
                 </section>
@@ -46,8 +51,11 @@
                 </section>
 
                 <section id="expenses" class="panel">
-                    <h2>花费</h2>
-                    <canvas id="expense-chart"></canvas>
+                    <h2>花费统计</h2>
+                    <div class="chart-container">
+                        <canvas id="expense-chart"></canvas>
+                    </div>
+                    <div class="demo-notice">* 此图表仅用于演示</div>
                 </section>
             </div>
         </div>
