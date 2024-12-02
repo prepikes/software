@@ -21,5 +21,5 @@ from django.urls import path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('', include('UsingAC.urls')) # 加入app对应urls
+    path('', include('UsingAC.urls'))  # 这样配置是正确的
 ]

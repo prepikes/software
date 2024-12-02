@@ -1,171 +1,84 @@
-let rooms = {
-    '101': { currentTemp: 25, targetTemp: 25, fanSpeed: 2, isOn: true },
-    '102': { currentTemp: 25, targetTemp: 25, fanSpeed: 0, isOn: false },
-    '103': { currentTemp: 25, targetTemp: 25, fanSpeed: 3, isOn: true },
-    '104': { currentTemp: 25, targetTemp: 25, fanSpeed: 0, isOn: false }
-};
+let currentTemp = 25;
+let fanSpeed = 0; // 0 代表关闭，1,2,3 代表低中高风速
+let isOn = false;
 
-let currentRoom = null;
-
-function changeTemp(roomId, targetTemp) {
-    if (!roomId || targetTemp < 18 || targetTemp > 30) return;
-    
-    let room = rooms[roomId];
-    if (room && room.isOn) {
-        room.targetTemp = targetTemp;
-        room.currentTemp = targetTemp;
+function increaseTemp() {
+    if (isOn && currentTemp < 30) {
+        currentTemp++;
         updateDisplayTemp();
-        updateRoomDisplay();
+    }
+}
+
+function decreaseTemp() {
+    if (isOn && currentTemp > 18) {
+        currentTemp--;
+        updateDisplayTemp();
     }
 }
 
 function togglePower() {
-    if (!currentRoom) return;
-    let room = rooms[currentRoom];
-    room.isOn = !room.isOn;
-    if (room.isOn) {
-        document.getElementById('target-temp').value = room.targetTemp;
-        document.getElementById('display-temp').textContent = `${room.targetTemp}°`;
-        document.querySelector('.power-status').classList.add('on');
+    isOn = !isOn;
+    const tempInput = document.getElementById('temp-input');
+    const setTempButton = tempInput.nextElementSibling;
+    
+    if (isOn) {
+        document.getElementById('ac-temp').value = currentTemp;
+        tempInput.disabled = false;
+        setTempButton.disabled = false;
+        updateDisplayTemp();
     } else {
-        document.getElementById('display-temp').textContent = '';
-        room.fanSpeed = 0;
-        document.querySelector('.power-status').classList.remove('on');
+        document.getElementById('display-temp').textContent = '关';
+        tempInput.disabled = true;
+        setTempButton.disabled = true;
+        tempInput.value = "";
     }
-    updateFanSpeedIcon();
-    updateRoomDisplay();
+    sendToServer("togglePower", { isOn: isOn });
 }
 
 function changeFanSpeed() {
-    if (!currentRoom) return;
-    let room = rooms[currentRoom];
-    if (room.isOn) {
-        room.fanSpeed = (room.fanSpeed + 1) % 6;
+    if (isOn) {
+        fanSpeed = fanSpeed + 1;
+        if (fanSpeed > 3) {
+            fanSpeed = 0;
+        }
         updateFanSpeedIcon();
+        if (fanSpeed > 0) {
+            sendToServer("changeFanSpeed", { speed: fanSpeed });
+        }
     }
-    updateRoomDisplay();
 }
 
 function updateDisplayTemp() {
-    if (!currentRoom) return;
-    let room = rooms[currentRoom];
-    if (room.isOn) {
+    if (isOn) {
         const tempElement = document.getElementById('display-temp');
-        tempElement.textContent = `${room.currentTemp}°`;
-        document.getElementById('ac-temp').value = room.currentTemp;
+        tempElement.textContent = `${currentTemp}°`;
+        document.getElementById('ac-temp').value = currentTemp;
+        document.getElementById('temp-input').value = currentTemp;
     }
 }
 
 function updateFanSpeedIcon() {
-    if (!currentRoom) return;
-    let room = rooms[currentRoom];
     const iconElement = document.getElementById('fan-speed-icon');
-    iconElement.innerHTML = ''; 
     
-    for (let i = 0; i < 5; i++) {
-        const bar = document.createElement('div');
-        bar.className = 'fan-bar';
-        const height = 12 + (i * 5);
-        bar.style.height = `${height}px`;
-        if (room.isOn && i < room.fanSpeed) {
-            bar.classList.add('active');
-        }
-        iconElement.appendChild(bar);
+    // 始终创建三个档位条，不论是否为0档
+    let bars = '';
+    for (let i = 1; i <= 3; i++) {
+        bars += `<span class="speed-bar${i <= fanSpeed ? ' active' : ''}"></span>`;
     }
+    iconElement.innerHTML = bars;
 }
 
-// 更新房间显示信息
-function updateRoomDisplay() {
-    const roomCards = document.querySelectorAll('.room-card');
-    roomCards.forEach(card => {
-        const roomNumber = card.querySelector('h3').textContent.split(' ')[1];
-        const room = rooms[roomNumber];
-        const infoDiv = card.querySelector('.room-info');
-        infoDiv.innerHTML = `
-            <p>当前温度: ${room.currentTemp}°C</p>
-            <p>空调状态: ${room.isOn ? '运行中' : '关闭'}</p>
-            <p>风速: ${room.fanSpeed}</p>
-        `;
-    });
-}
+// 初始化
+updateDisplayTemp();
+updateFanSpeedIcon();
 
-// 初始化房间数据
-function initializeRooms() {
-    const roomsData = [
-        { number: '101', temp: 26, occupied: true },
-        { number: '102', temp: 24, occupied: false },
-        { number: '103', temp: 25, occupied: true },
-        { number: '104', temp: 23, occupied: false },
-    ];
-    
-    const roomGrid = document.querySelector('.room-grid');
-    roomGrid.innerHTML = '';
-    
-    roomsData.forEach(room => {
-        const roomCard = createRoomCard(room);
-        roomGrid.appendChild(roomCard);
-    });
-    updateRoomDisplay();
-}
-
-function createRoomCard(room) {
-    const cardDiv = document.createElement('div');
-    cardDiv.className = 'room-card';
-    cardDiv.innerHTML = `
-        <div class="room-header">
-            <h3>房间 ${room.number}</h3>
-            <span class="status ${room.occupied ? 'occupied' : ''}">${room.occupied ? '已入住' : '空闲'}</span>
-        </div>
-        <div class="room-info">
-            <p>
-                <span class="power-status ${rooms[room.number].isOn ? 'on' : ''}"></span>
-                当前温度: ${room.temp}°C
-            </p>
-            <p>空调状态: ${rooms[room.number].isOn ? '运行中' : '关闭'}</p>
-            <p>风速: ${rooms[room.number].fanSpeed}</p>
-        </div>
-        <div class="room-controls">
-            <button class="control-btn" onclick="showDetails('${room.number}')">查看详情</button>
-            <button class="control-btn" onclick="showControl('${room.number}')">控制空调</button>
-        </div>
-    `;
-    return cardDiv;
-}
-
-function showControl(roomNumber) {
-    currentRoom = roomNumber;
-    document.getElementById('control-room-number').textContent = roomNumber;
-    
-    // 更新控制面板显示当前房间的状态
-    const room = rooms[roomNumber];
-    const powerStatus = document.querySelector('.power-status');
-    
-    if (room.isOn) {
-        document.getElementById('target-temp').value = room.targetTemp;
-        document.getElementById('display-temp').textContent = `${room.targetTemp}°`;
-        powerStatus.classList.add('on');
-    } else {
-        document.getElementById('display-temp').textContent = '';
-        powerStatus.classList.remove('on');
+// 滑动条变化时更新显示温度
+document.getElementById('ac-temp').addEventListener('input', function() {
+    if (isOn) {
+        currentTemp = parseInt(this.value, 10);
+        updateDisplayTemp();
     }
-    updateFanSpeedIcon();
-    
-    switchPage('ac-control');
-}
-
-function setTargetTemp() {
-    if (!currentRoom) return;
-    let room = rooms[currentRoom];
-    if (room.isOn) {
-        const targetTempInput = document.getElementById('target-temp');
-        const targetTemp = parseInt(targetTempInput.value, 10);
-        if (targetTemp >= 18 && targetTemp <= 30) {
-            changeTemp(currentRoom, targetTemp);
-        } else {
-            alert('温度必须在18-30度之间');
-        }
-    }
-}
+});
 
 // 页面切换功能
 function switchPage(pageId) {
@@ -191,6 +104,50 @@ function switchPage(pageId) {
     }
 }
 
+// 初始化房间数据（示例）
+function initializeRooms() {
+    // 这里可以从后端获取房间数据
+    const rooms = [
+        { number: '101', temp: 26, acStatus: '运行中', setTemp: 22, occupied: true },
+        { number: '102', temp: 24, acStatus: '关闭', setTemp: 25, occupied: false },
+        { number: '103', temp: 25, acStatus: '运行中', setTemp: 23, occupied: true },
+        { number: '104', temp: 23, acStatus: '关闭', setTemp: 24, occupied: false },
+        // 可以添加更多房间...
+    ];
+    
+    // 清空现有的房间卡片
+    const roomGrid = document.querySelector('.room-grid');
+    roomGrid.innerHTML = '';
+    
+    // 渲染房间卡片
+    rooms.forEach(room => {
+        const roomCard = createRoomCard(room);
+        roomGrid.appendChild(roomCard);
+    });
+}
+
+// 创建房间卡片
+function createRoomCard(room) {
+    const cardDiv = document.createElement('div');
+    cardDiv.className = 'room-card';
+    cardDiv.innerHTML = `
+        <div class="room-header">
+            <h3>房间 ${room.number}</h3>
+            <span class="status ${room.occupied ? 'occupied' : ''}">${room.occupied ? '已入住' : '空闲'}</span>
+        </div>
+        <div class="room-info">
+            <p>当前温度: ${room.temp}°C</p>
+            <p>空调状态: ${room.acStatus}</p>
+            <p>设定温度: ${room.setTemp}°C</p>
+        </div>
+        <div class="room-controls">
+            <button class="control-btn" onclick="showDetails('${room.number}')">查看详情</button>
+            <button class="control-btn" onclick="showControl('${room.number}')">控制空调</button>
+        </div>
+    `;
+    return cardDiv;
+}
+
 // 添加显示详情和控制面板的函数
 function showDetails(roomNumber) {
     document.getElementById('detail-room-number').textContent = roomNumber;
@@ -198,7 +155,50 @@ function showDetails(roomNumber) {
     switchPage('ac-details');
 }
 
+function showControl(roomNumber) {
+    document.getElementById('control-room-number').textContent = roomNumber;
+    // 这里可以添加从后端获取空调状态的逻辑
+    switchPage('ac-control');
+}
+
+// 添加setTemperature函数
+function setTemperature() {
+    if (!isOn) return;
+    
+    const tempInput = document.getElementById('temp-input');
+    const newTemp = parseInt(tempInput.value);
+    
+    if (newTemp < 18 || newTemp > 30) {
+        alert('温度必须在18-30度之间');
+        tempInput.value = currentTemp;
+        return;
+    }
+    
+    sendToServer("tempSlider", { temperature: newTemp });
+    currentTemp = newTemp;
+    updateDisplayTemp();
+}
+
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', () => {
+    const tempInput = document.getElementById('temp-input');
+    const setTempButton = tempInput.nextElementSibling;
+    
+    // 初始状态为关机，禁用输入框和按钮
+    tempInput.disabled = true;
+    setTempButton.disabled = true;
+    tempInput.value = ""; // 清空输入框
+    document.getElementById("display-temp").textContent = "关";
+    
+    // 确保风速图标显示
+    const iconElement = document.getElementById("fan-speed-icon");
+    if (iconElement) {  // 添加检查确保元素存在
+        let bars = '';
+        for (let i = 1; i <= 3; i++) {
+            bars += `<span class="speed-bar${i <= fanSpeed ? ' active' : ''}"></span>`;
+        }
+        iconElement.innerHTML = bars;
+    }
+    
     initializeRooms();
 });
