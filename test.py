@@ -11,6 +11,7 @@ def send_request(action, data=None):
         "decreaseTemp": "temperature/",
         "togglePower": "power/",
         "changeFanSpeed": "fan-speed/",
+        "test": "test/",
     }
 
     endpoint = endpoints.get(action)
@@ -39,24 +40,27 @@ def send_request(action, data=None):
 
 def main():
     # 定时操作序列
-    send_request("togglePower", {"isOn": True})
-    time.sleep(5)
-    send_request("decreaseTemp", {"currentTemp": 18})
-    time.sleep(20)
-
-    send_request("changeFanSpeed", {"fanSpeed": 3})
-    time.sleep(20)
-
-    send_request("increaseTemp", {"currentTemp": 22})
-    time.sleep(20)
-
-    send_request("togglePower", {"isOn": False})
-    time.sleep(15)
-
-    send_request("togglePower", {"isOn": True})
-    time.sleep(30)
-
-    send_request("togglePower", {"isOn": False})
+    # send_request("togglePower", { "isOn": True, "room_id": 1})
+    # time.sleep(0.1)
+    # send_request("togglePower", { "isOn": True, "room_id": 2})
+    # time.sleep(0.1)
+    # send_request("togglePower", { "isOn": True, "room_id": 3})
+    # time.sleep(0.1)
+    # send_request("togglePower", { "isOn": True, "room_id": 4})
+    # time.sleep(0.1)
+    # send_request("decreaseTemp", { "targetTemp": 21.5, "room_id": 1})
+    # send_request("test")
+    # time.sleep(0.1)
+    # send_request("decreaseTemp", { "targetTemp": 21.5, "room_id": 2})
+    # time.sleep(10)
+    # send_request("changeFanSpeed", { "fanSpeed": 3, "room_id": 1})
+    # time.sleep(0.1)
+    # send_request("changeFanSpeed", { "fanSpeed": 2, "room_id": 2})
+    # time.sleep(0.1)
+    # send_request("changeFanSpeed", { "fanSpeed": 2, "room_id": 3})
+    # time.sleep(0.1)
+    # send_request("togglePower", { "isOn": False, "room_id": 4})
+    send_request("test")
 
 if __name__ == "__main__":
     main()
